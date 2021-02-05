@@ -1,7 +1,7 @@
 # Learning
 - JavaScript
-    - Node
-    - React
-        - ReactJS
-        - React Native
+	- Node
+	- React
+		- ReactJS
+		- React Native
     
