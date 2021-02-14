@@ -9,20 +9,20 @@ const p = path.join(
 );
 
 const getProductsFromFile = (cb) => {
-	fs.readFile(p, (err, fileContent) => {
+	fs.readFile(p, async (err, fileContent) => {
 		if (err) {
-			cb([]);
+			await cb([]);
 		} else {
-			cb(JSON.parse(fileContent));
+			await cb(JSON.parse(fileContent));
 		};
 	});
 };
 
 module.exports = class Product {
-	constructor(title, imageUrl, description, price) {
+	constructor(title, imageUrl, price, description) {
 		this.title = title;
-		this.imgUrl = imageUrl;
-		this.title = price;
+		this.imageUrl = imageUrl;
+		this.price = price;
 		this.description = description;
 	};
 
