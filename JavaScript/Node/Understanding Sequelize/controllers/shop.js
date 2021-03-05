@@ -2,16 +2,16 @@ const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
     Product.findAll()
-    .then(products => {
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            path: '/'
+        .then(products => {
+            res.render('shop/product-list', {
+                prods: products,
+                pageTitle: 'All Products',
+                path: '/'
+            });
+        })
+        .catch(err => {
+            console.log(err);
         });
-    })
-    .catch(err => {
-        console.log(err);
-    });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -83,13 +83,13 @@ exports.postCart = (req, res, next) => {
             if (products.length > 0) {
                 product = products[0];
             }
-            
+
             if (product) {
                 const oldQuantity = product.cartItem.quantity;
                 newQuantity = oldQuantity + 1;
                 return product
             }
-            return Product.findByPk(prodId)  
+            return Product.findByPk(prodId)
         })
         .then(product => {
             return fetchedCart.addProduct(product, {
@@ -120,8 +120,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-    req.user.getCart()
+    let fetchedCart;
+    req.user
+        .getCart()
         .then(cart => {
+            fetchedCart = cart;
             return cart.getProducts();
         })
         .then(products => {
@@ -137,21 +140,23 @@ exports.postOrder = (req, res, next) => {
                 .catch(err => console.log(err))
         })
         .then(result => {
-            res.redirect('/orders')
+            return fetchedCart.setProducts(null);
+        })
+        .then(result => {
+            res.redirect('/orders');
         })
         .catch(err => console.log(err))
 }
 
 exports.getOrders = (req, res, next) => {
-    res.render('shop/orders', {
-        path: '/orders',
-        pageTitle: 'Your Orders'
-    });
-};
-
-exports.getCheckout = (req, res, next) => {
-    res.render('shop/checkout', {
-        path: '/checkout',
-        pageTitle: 'Checkout'
-    });
+    req.user
+        .getOrders({ include: ['products'] })
+        .then(orders => {
+            res.render('shop/orders', {
+                path: '/orders',
+                pageTitle: 'Your Orders',
+                orders: orders
+            })
+        })
+        .catch(err => console.log(err));
 };
