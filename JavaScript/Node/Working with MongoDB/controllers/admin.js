@@ -53,6 +53,8 @@ exports.getEditProduct = (req, res, next) => {
         .catch(err => console.log(err));
 };
 
+
+/*
 exports.postEditProduct = (req, res, next) => {
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
@@ -85,13 +87,13 @@ exports.getProducts = (req, res, next) => {
             });
         })
         .catch(err => console.log(err))
-    /*  Product.fetchAll(products => {
-         res.render('admin/products', {
-             prods: products,
-             pageTitle: 'Admin Products',
-             path: '/admin/products'
-         });
-     }); */
+        Product.fetchAll(products => {
+            res.render('admin/products', {
+                prods: products,
+                pageTitle: 'Admin Products',
+                path: '/admin/products'
+            });
+        }); 
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -106,3 +108,5 @@ exports.postDeleteProduct = (req, res, next) => {
         })
         .catch(err => console.log(err));
 }
+
+*/
