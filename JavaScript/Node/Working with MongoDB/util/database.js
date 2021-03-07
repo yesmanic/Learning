@@ -1,5 +1,4 @@
 const mongodb = require('mongodb');
-const { get } = require('../routes/admin');
 const MongoClient = mongodb.MongoClient;
 
 let _db;
@@ -7,7 +6,7 @@ let _db;
 const config = require('./config.json');
 
 const mongoConnect = callback => {
-    MongoClient.connect(`mongodb+srv://yesman:${config.password}@cluster0.qpcbs.mongodb.net/shop?retryWrites=true&w=majority`)
+    MongoClient.connect(config.connectionLink)
         .then(client => {
             console.log('Connected!');
             _db = client.db()
