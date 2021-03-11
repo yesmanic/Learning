@@ -102,9 +102,12 @@ class User {
 
     }
 
-    getOrder() {
+    getOrders() {
         const db = database.getDb();
-        /* return db.collection('orders') */
+        return db
+            .collection('orders')
+            .find({ 'user._id': new ObjectId(this._id) })
+            .toArray()
 
     }
 
