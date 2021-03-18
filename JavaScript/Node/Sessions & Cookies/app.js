@@ -6,10 +6,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
-const errorController = require('./controllers/error');
 const MONGODB_URI = require('./util/config.json').MONGODB_URI;
+const errorController = require('./controllers/error');
 const User = require('./models/user');
-
 
 const app = express();
 const store = new MongoDBStore({
@@ -26,21 +25,14 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ 
-  secret: 'my secret', 
-  resave: false, 
-  saveUninitialized: false, 
-  store: store 
-}));
-
-app.use((req, res, next) => {
-  User.findById('604e55511b8e7124ceb7a11c')
-    .then(user => {
-      req.user = user;
-      next();
-    })
-    .catch(err => console.log(err));
-});
+app.use(
+  session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store
+  })
+);
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -49,15 +41,13 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    MONGODB_URI
-  )
+  .connect(MONGODB_URI)
   .then(result => {
     User.findOne().then(user => {
       if (!user) {
         const user = new User({
           name: 'Yesman',
-          email: 'test@test.com',
+          email: 'yesman@test.com',
           cart: {
             items: []
           }
