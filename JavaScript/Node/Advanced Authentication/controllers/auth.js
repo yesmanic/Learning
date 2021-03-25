@@ -117,7 +117,7 @@ exports.getReset = (req, res, next) => {
 }
 
 exports.postReset = (req, res, next) => {
-	crypto.randomByte(32, (err, buffer) => {
+	crypto.randomBytes(32, (err, buffer) => {
 		if (err) {
 			console.log(err);
 			return res.redirect('/reset');
@@ -140,7 +140,7 @@ exports.postReset = (req, res, next) => {
 					'Password reset', 
 					`
 						<p>You requested a password reset</p>
-						<p>Click this <a href="http://localhost:3000/reset/${token}">link to set a new password.</p>
+						<p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
 						
 					`
 				)
