@@ -2,11 +2,25 @@ const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
-const transporter = require('./nodemailer');
+// const sendgridTransport = require('nodemailer-sendgrid-transport');
+// const transporter = require('./nodemailer');
 
 const API_KEY = require('../util/config.json').API_KEY;
+const SMTP_CONFIG = require('../util/config.json').SMTP_CONFIG;
 const User = require('../models/user');
+
+const transporter = nodemailer.createTransport({
+	host: SMTP_CONFIG.host,
+	port: SMTP_CONFIG.port,
+	secure: false,
+	auth: {
+		user: SMTP_CONFIG.user,
+		pass: SMTP_CONFIG.pass,
+	},
+	tls: {
+		rejectUnauthorized: false
+	}
+})
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error');
@@ -88,7 +102,13 @@ exports.postSignup = (req, res, next) => {
         })
         .then(result => {
           res.redirect('/login')
-          return transporter.execute(email, 'Signup succeeded!', '<h1>You successfully signed up!</h1>')
+          return transporter.sendMail({
+			  from: 'Risum <userconvidado123@gmail.com>',
+			  to: email,
+			  subject: 'Signup succeeded!',
+			  html: '<h1>You successfully signed up!</h1>'
+		  })
+		  .then(result => console.log(result))
         })
         .catch(err => console.log(err));
     })
@@ -135,15 +155,16 @@ exports.postReset = (req, res, next) => {
 			})
 			.then(result => {
 				res.redirect('/');
-				transporter.execute(
-					req.body.email, 
-					'Password reset', 
-					`
+				transporter.sendMail({
+					from: 'Risum <userconvidado123@gmail.com>',
+					to: req.body.email,
+					subject: 'Password reset',
+					html: `
 						<p>You requested a password reset</p>
 						<p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
 						
 					`
-				)
+				})
 			})
 			.catch(err => console.log(err));
 	});
