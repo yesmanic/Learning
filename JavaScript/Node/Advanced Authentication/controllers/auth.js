@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 const API_KEY = require('../util/config.json').API_KEY;
 const SMTP_CONFIG = require('../util/config.json').SMTP_CONFIG;
 const User = require('../models/user');
+const user = require('../models/user');
 
 const transporter = nodemailer.createTransport({
 	host: SMTP_CONFIG.host,
@@ -155,17 +156,37 @@ exports.postReset = (req, res, next) => {
 			})
 			.then(result => {
 				res.redirect('/');
-				transporter.sendMail({
+				return transporter.sendMail({
 					from: 'Risum <userconvidado123@gmail.com>',
 					to: req.body.email,
 					subject: 'Password reset',
 					html: `
 						<p>You requested a password reset</p>
 						<p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
-						
-					`
+            `
 				})
+        .then(result => console.log(result))
 			})
 			.catch(err => console.log(err));
 	});
+}
+
+exports.getNewPassword = (req, res, next) => {
+  const token = req.params.token;
+  User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+    .then(user => {
+      let message = req.flash('error');
+      if (message.length > 0) {
+        message = message[0];
+      } else {
+        message = null;
+      }
+    })
+    .catch(err => console.log(err));
+  res.render('auth/new-password', {
+    path: '/new-password',
+    pageTitle: 'New Password',
+    errorMessage: message,
+    userId: user._id.toString()
+  });
 }
