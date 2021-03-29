@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator'); //
 
 const API_KEY = require('../util/config.json').API_KEY;
 const SMTP_CONFIG = require('../util/config.json').SMTP_CONFIG;
@@ -51,7 +51,8 @@ exports.getSignup = (req, res, next) => {
       email: '', 
       password: '', 
       confirmPassword: '' 
-    }
+    },
+    validationErrors: []
   });
 };
 
@@ -111,7 +112,8 @@ exports.postSignup = (req, res, next) => {
         email: email, 
         password: password, 
         confirmPassword: req.body.confirmPassword 
-      }
+      },
+      validationErrors: errors.array()
 	  });
   }
   
